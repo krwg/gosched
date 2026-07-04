@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -54,8 +55,8 @@ var once sync.Once
 func Handler() http.Handler {
 	once.Do(func() {
 		registry.MustRegister(
-			prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}),
-			prometheus.NewGoCollector(),
+			collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+			collectors.NewGoCollector(),
 		)
 	})
 	return promhttp.HandlerFor(registry, promhttp.HandlerOpts{})
