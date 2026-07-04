@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package gosched.v1;
+
+option go_package = "github.com/krwg/gosched/pkg/rpc/v1;rpcv1";
+
+message Task {
+  string id = 1;
+  string name = 2;
+  int64 duration = 3;
+  int64 deadline = 4;
+  int32 priority = 5;
+  int64 arrival_time = 6;
+  int64 period = 7;
+}
+
+message ScheduleRequest {
+  string algorithm = 1;
+  int32 workers = 2;
+  repeated Task tasks = 3;
+}
+
+message ScheduleResponse {
+  string algorithm = 1;
+  int32 tasks_processed = 2;
+  int32 completed = 3;
+  int32 missed_deadlines = 4;
+  double average_wait_ms = 5;
+  double cpu_utilization_pct = 6;
+  int32 max_queue_depth = 7;
+  int64 total_simulated_ms = 8;
+}
+
+message HealthResponse {
+  string status = 1;
+  string version = 2;
+}
+
+service SchedulerService {
+  rpc Schedule(ScheduleRequest) returns (ScheduleResponse);
+  rpc Health(HealthRequest) returns (HealthResponse);
+}
+
+message HealthRequest {}

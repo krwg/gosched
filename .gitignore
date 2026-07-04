@@ -1,0 +1,8 @@
+/bin/
+/coverage.out
+/coverage
+/coverage.html
+*.exe
+*.test
+result.json
+chart.png

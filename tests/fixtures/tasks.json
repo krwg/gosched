@@ -1,0 +1,26 @@
+[
+  {
+    "id": "task-1",
+    "name": "Rendering",
+    "duration": 100,
+    "deadline": 500,
+    "priority": 1,
+    "arrival_time": 0
+  },
+  {
+    "id": "task-2",
+    "name": "Data Backup",
+    "duration": 50,
+    "deadline": 200,
+    "priority": 3,
+    "arrival_time": 10
+  },
+  {
+    "id": "task-3",
+    "name": "Log Rotation",
+    "duration": 30,
+    "deadline": 150,
+    "priority": 2,
+    "arrival_time": 5
+  }
+]
