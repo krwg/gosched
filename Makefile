@@ -2,7 +2,8 @@ run-tests:
 	go test ./... -race -count=1
 
 test:
-	go test ./... -race -coverprofile=coverage.out -covermode=atomic
+	go test ./internal/... ./pkg/task ./pkg/visualizer ./tests/... -race -coverprofile=coverage.out -covermode=atomic
+	go test ./cmd/... ./examples/... ./pkg/rpc/... -race -count=1
 	go tool cover -func=coverage.out
 
 bench:

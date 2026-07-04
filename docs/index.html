@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="GoSched — production-ready real-time task scheduler in Go. RM, EDF, LLF, gRPC, Prometheus.">
+<meta name="author" content="krwg">
+<title>GoSched — Go Scheduler</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #141418;
+    --surface: #1c1c22;
+    --surface2: #24242c;
+    --border: #2e2e38;
+    --text: #e8e8ed;
+    --muted: #8b8b9a;
+    --blue: #3478f6;
+    --green: #30b078;
+    --amber: #f6a634;
+    --purple: #b052de;
+    --red: #dc4646;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(52,120,246,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(52,120,246,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 20px 80px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .logo-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--blue), var(--purple));
+    display: grid;
+    place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(52,120,246,0.25);
+  }
+
+  h1 {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, #a8b4ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 520px;
+    margin: 12px auto 28px;
+  }
+
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+  }
+
+  .badge.go { color: #00d9ff; border-color: rgba(0,217,255,0.2); }
+  .badge.grpc { color: #7dd3fc; }
+  .badge.prom { color: #f97316; }
+
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+
+  .btn:hover { transform: translateY(-2px); }
+
+  .btn-primary {
+    background: var(--blue);
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(52,120,246,0.35);
+  }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  section { margin-bottom: 48px; }
+
+  h2 {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .card:hover { border-color: rgba(52,120,246,0.4); }
+
+  .card h3 {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .card p {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .card.rm h3 { color: var(--green); }
+  .card.edf h3 { color: var(--blue); }
+  .card.llf h3 { color: var(--amber); }
+
+  .gantt-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    overflow-x: auto;
+  }
+
+  .gantt-title {
+    color: var(--muted);
+    margin-bottom: 16px;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .gantt-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+  }
+
+  .gantt-label {
+    width: 88px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .gantt-track {
+    display: flex;
+    gap: 2px;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .gantt-cell {
+    width: 10px;
+    height: 18px;
+    border-radius: 2px;
+    background: var(--surface2);
+  }
+
+  .gantt-cell.on { background: var(--blue); }
+  .gantt-cell.on.g { background: var(--green); }
+  .gantt-cell.on.a { background: var(--amber); }
+  .gantt-cell.on.p { background: var(--purple); }
+  .gantt-cell.idle { background: #2a2a34; }
+
+  .gantt-meta {
+    color: var(--muted);
+    font-size: 0.72rem;
+    margin-left: 4px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .stat {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .stat .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--blue);
+  }
+
+  .stat .lbl {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 8px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .links a:hover {
+    color: var(--text);
+    border-color: var(--blue);
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.8rem;
+  }
+
+  footer a {
+    color: var(--blue);
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="wrap">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">GS</div>
+    </div>
+    <h1>GoSched</h1>
+    <p class="tagline">Production-ready real-time task scheduler — RM, EDF, LLF, custom heap, gRPC, Prometheus.</p>
+    <div class="badges">
+      <span class="badge go">Go 1.22+</span>
+      <span class="badge">MIT</span>
+      <span class="badge grpc">gRPC</span>
+      <span class="badge prom">Prometheus</span>
+      <span class="badge">Docker</span>
+    </div>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/krwg/gosched">GitHub</a>
+      <a class="btn btn-secondary" href="https://github.com/krwg/gosched/releases">Releases</a>
+      <a class="btn btn-secondary" href="https://github.com/krwg/gosched/blob/main/README.md">Docs</a>
+    </div>
+  </header>
+
+  <section>
+    <h2>Algorithms</h2>
+    <div class="cards">
+      <div class="card rm">
+        <h3>RM</h3>
+        <p>Rate Monotonic — static priority by period. Liu &amp; Layland 69% bound.</p>
+      </div>
+      <div class="card edf">
+        <h3>EDF</h3>
+        <p>Earliest Deadline First — optimal uniprocessor dynamic scheduling.</p>
+      </div>
+      <div class="card llf">
+        <h3>LLF</h3>
+        <p>Least Laxity First — minimum slack, reordering as time advances.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--purple)">Heap</h3>
+        <p>Custom binary min-heap. O(log n) push, pop, heapify.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Live simulation preview</h2>
+    <div class="gantt-panel">
+      <div class="gantt-title">Gantt · EDF · 4 workers</div>
+      <div class="gantt-row">
+        <span class="gantt-label">Worker-1</span>
+        <div class="gantt-track" id="w1"></div>
+        <span class="gantt-meta">Rendering</span>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-label">Worker-2</span>
+        <div class="gantt-track" id="w2"></div>
+        <span class="gantt-meta">Data Backup</span>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-label">Worker-3</span>
+        <div class="gantt-track" id="w3"></div>
+        <span class="gantt-meta">Log Rotation</span>
+      </div>
+      <div class="gantt-row">
+        <span class="gantt-label">Worker-4</span>
+        <div class="gantt-track" id="w4"></div>
+        <span class="gantt-meta">idle</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="val">92%</div><div class="lbl">CPU util</div></div>
+        <div class="stat"><div class="val">45ms</div><div class="lbl">Avg wait</div></div>
+        <div class="stat"><div class="val">12</div><div class="lbl">Queue depth</div></div>
+        <div class="stat"><div class="val">EDF</div><div class="lbl">Algorithm</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Stack</h2>
+    <div class="cards">
+      <div class="card">
+        <h3 style="color:#7dd3fc">gRPC + REST</h3>
+        <p>Schedule workloads over HTTP JSON or protobuf RPC.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:#f97316">Prometheus</h3>
+        <p>Metrics endpoint with Grafana dashboard via Docker Compose.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--green)">Plugins</h3>
+        <p>Load custom .so schedulers or use NewCustom in Go.</p>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--amber)">CLI</h3>
+        <p>schedule · visualize · benchmark · serve</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Quick start</h2>
+    <div class="gantt-panel" style="font-size:0.82rem;line-height:1.8;color:var(--muted)">
+      <span style="color:var(--green)">$</span> go install github.com/krwg/gosched/cmd/scheduler@latest<br>
+      <span style="color:var(--green)">$</span> gosched schedule --algorithm=edf --tasks=tasks.json<br>
+      <span style="color:var(--green)">$</span> docker compose up --build -d
+    </div>
+  </section>
+
+  <section>
+    <h2>Explore</h2>
+    <div class="links">
+      <a href="https://github.com/krwg/gosched/blob/main/docs/architecture.md">Architecture</a>
+      <a href="https://github.com/krwg/gosched/blob/main/docs/algorithms.md">Algorithms</a>
+      <a href="https://github.com/krwg/gosched/blob/main/docs/api.md">API</a>
+      <a href="https://github.com/krwg/gosched/blob/main/docs/deployment.md">Deployment</a>
+      <a href="https://github.com/krwg/gosched/actions">CI</a>
+    </div>
+  </section>
+
+  <footer>
+    <p>MIT · <a href="https://github.com/krwg">krwg</a> · GoSched — Go Scheduler</p>
+  </footer>
+</div>
+<script>
+(function () {
+  function fill(id, pattern, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    for (var i = 0; i < 28; i++) {
+      var c = document.createElement('div');
+      c.className = 'gantt-cell ' + (pattern[i] ? (cls || 'on') : 'idle');
+      el.appendChild(c);
+    }
+  }
+  fill('w1', [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+  fill('w2', [0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], 'on g');
+  fill('w3', [0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0], 'on a');
+  fill('w4', [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+})();
+</script>
+</body>
+</html>

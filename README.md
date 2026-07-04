@@ -5,6 +5,7 @@
 **Go Scheduler — production-ready real-time task scheduling.**
 
 [![CI](https://github.com/krwg/gosched/actions/workflows/ci.yml/badge.svg)](https://github.com/krwg/gosched/actions/workflows/ci.yml)
+[![Pages](https://img.shields.io/badge/Pages-live-5c6bc0?style=flat-square)](https://krwg.github.io/gosched/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/krwg/gosched)](https://goreportcard.com/report/github.com/krwg/gosched)
 [![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-af52de?style=flat-square)](LICENSE)
@@ -69,7 +70,7 @@ curl -s -X POST http://localhost:8080/api/v1/schedule \
 | Prometheus | http://localhost:9090 |
 | Grafana | http://localhost:3000 (`admin` / `gosched`) |
 
-See **[docs/deployment.md](docs/deployment.md)**.
+See **[docs/deployment.md](docs/deployment.md)** · **[Landing](https://krwg.github.io/gosched/)**
 
 ---
 
