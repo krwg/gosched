@@ -178,7 +178,10 @@ func benchmarkCmd() *cobra.Command {
 					strings.ToUpper(r.Algorithm), r.TotalMs, r.Missed, r.AvgWait, float64(r.SchedulingNs)/1000.0)
 			}
 
-			data, _ := json.MarshalIndent(rows, "", "  ")
+			data, err := json.MarshalIndent(rows, "", "  ")
+			if err != nil {
+				return err
+			}
 			fmt.Printf("\n%s\n", data)
 			return nil
 		},

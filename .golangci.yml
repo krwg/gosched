@@ -1,3 +1,11 @@
+run:
+  timeout: 5m
+  go: "1.22"
+
+issues:
+  exclude-files:
+    - "pkg/rpc/v1/.*\\.pb\\.go$"
+
 linters:
   enable:
     - errcheck
@@ -5,6 +13,3 @@ linters:
     - ineffassign
     - staticcheck
     - unused
-
-run:
-  timeout: 5m

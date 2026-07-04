@@ -71,10 +71,12 @@ func serveCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			go func() {
-				fmt.Fprintf(os.Stderr, "gRPC listening on %s\n", grpcAddr)
-				_ = grpcSrv.Serve(grpcLis)
-			}()
+	go func() {
+		fmt.Fprintf(os.Stderr, "gRPC listening on %s\n", grpcAddr)
+		if err := grpcSrv.Serve(grpcLis); err != nil {
+			fmt.Fprintf(os.Stderr, "gRPC server stopped: %v\n", err)
+		}
+	}()
 
 			select {
 			case <-ctx.Done():
