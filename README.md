@@ -7,7 +7,7 @@
 [![CI](https://github.com/krwg/gosched/actions/workflows/ci.yml/badge.svg)](https://github.com/krwg/gosched/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/badge/Pages-live-5c6bc0?style=flat-square)](https://krwg.github.io/gosched/)
 [![Go Report Card](https://goreportcard.com/badge/github.com/krwg/gosched)](https://goreportcard.com/report/github.com/krwg/gosched)
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
+[![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev/)
 [![License](https://img.shields.io/badge/license-MIT-af52de?style=flat-square)](LICENSE)
 [![gRPC](https://img.shields.io/badge/gRPC-enabled-244c5a?style=flat-square&logo=grpc&logoColor=white)](docs/api.md)
 [![Prometheus](https://img.shields.io/badge/Prometheus-metrics-e6522c?style=flat-square&logo=prometheus&logoColor=white)](docs/api.md)
