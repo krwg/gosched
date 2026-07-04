@@ -32,4 +32,13 @@ cover-html: test
 clean:
 	rm -rf bin coverage.out coverage.html
 
-.PHONY: build test run bench lint cover-html clean run-tests serve proto
+docker-up:
+	docker compose up --build -d
+
+docker-down:
+	docker compose down
+
+docker-logs:
+	docker compose logs -f gosched
+
+.PHONY: build test run bench lint cover-html clean run-tests serve proto docker-up docker-down docker-logs

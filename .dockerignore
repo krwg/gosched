@@ -1,0 +1,10 @@
+.git
+.github
+bin
+coverage
+coverage.out
+coverage.html
+result.json
+chart.png
+*.exe
+README.md

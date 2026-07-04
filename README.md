@@ -31,6 +31,7 @@ Built to demonstrate algorithms, data structures, concurrency, and production ob
 | **Observability** | Prometheus `/metrics`, Gantt ASCII + PNG |
 | **Extensibility** | Go plugin loader + `NewCustom` scheduler |
 | **Quality** | Unit + integration tests, benchmarks, GitHub Actions CI |
+| **Docker** | Compose: GoSched + Prometheus + Grafana |
 
 ---
 
@@ -50,6 +51,25 @@ curl -s localhost:8080/health
 curl -s localhost:8080/metrics
 curl -s -X POST localhost:8080/api/v1/schedule -H "Content-Type: application/json" -d @tests/fixtures/tasks.json
 ```
+
+---
+
+## Docker
+
+```bash
+docker compose up --build -d
+curl -s -X POST http://localhost:8080/api/v1/schedule \
+  -H "Content-Type: application/json" \
+  -d @tests/fixtures/tasks.json
+```
+
+| Service | URL |
+|---------|-----|
+| GoSched | http://localhost:8080 |
+| Prometheus | http://localhost:9090 |
+| Grafana | http://localhost:3000 (`admin` / `gosched`) |
+
+See **[docs/deployment.md](docs/deployment.md)**.
 
 ---
 
@@ -137,6 +157,7 @@ Details: **[docs/architecture.md](docs/architecture.md)**
 | [Algorithms](docs/algorithms.md) | RM, EDF, LLF theory + FAQ |
 | [API](docs/api.md) | HTTP, gRPC, Prometheus |
 | [Plugins](docs/plugins.md) | Custom `.so` schedulers |
+| [Deployment](docs/deployment.md) | Docker Compose stack |
 
 ---
 
@@ -173,6 +194,8 @@ make bench
 make lint
 make run
 make serve
+make docker-up
+make docker-down
 ```
 
 ---
